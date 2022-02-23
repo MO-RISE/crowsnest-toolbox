@@ -1,7 +1,30 @@
 # crowsnest-toolbox
 A toolbox for handling of streaming data within a crowsnest setup.
 
+It is packaged as a docker image, available here: https://github.com/orgs/MO-RISE/packages
+
+The image expects a "run" command inputted on startup. Using docker run, this would manifest as such:
+```
+docker run crowsnest-toolbox "<command>"
+```
+
+Using docker-compose it would look like this (example: recording from a MQTT broker):
+```
+version: '3'
+services:
+    recorder:
+        image: ghcr.io/mo-rise/crowsnest-toolbox
+        restart: on-failure
+        network_mode: "host"
+        command: "mosquitto_sub -t <topic_1> -t <topic_2> -F "%U %t %v" >> crowsnest.log"
+        volumes:
+        - $HOME/recordings:/recordings
+        working_dir: /recordings
+```
+
 ## Recipes
+
+The following are "recipes" for "run" commands that can be used with this image.
 
 * Recording data
   ```
