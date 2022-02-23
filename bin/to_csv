@@ -1,0 +1,65 @@
+#!/usr/bin/env python3.9
+
+"""
+Command line utility tool for processing input from stdin in the following format:
+```
+<Unix timestamp> <Receive topic> <Message payload>
+<Unix timestamp> <Receive topic> <Message payload>
+...
+```
+where <Message payload> is assumed to be in JSON format.
+
+Produces a csv file for each unique topic according to the following:
+File name: <output_path>/<topic>.csv where all "/" in <topic> are replaced
+           by "__" (double underscores)
+Content: columns according to the content of the JSON payload. The first column is the
+         <Unix timestamp> named as "received_at".
+
+"""
+
+import sys
+import json
+from pathlib import Path
+import argparse
+from collections import defaultdict
+
+import pandas as pd
+
+
+def process(directory_path: Path):
+    """Process stdin and output csv files
+
+    Args:
+        directory_path (Path): path to output directory
+    """
+
+    _timestamp_store = defaultdict(list)
+    _payload_store = defaultdict(list)
+
+    for line in sys.stdin.readlines():
+        unix_timestamp, topic, *payload = line.split(" ")
+        payload = " ".join(payload)
+        _timestamp_store[topic].append(float(unix_timestamp))
+        _payload_store[topic].append(json.loads(payload))
+
+    for topic, payloads in _payload_store.items():
+        unix_timestamps = _timestamp_store[topic]
+        output: pd.DataFrame = pd.json_normalize(payloads)
+        output.insert(0, "received_at", unix_timestamps)
+
+        path = directory_path / Path(f"{topic.replace('/', '__')}.csv")
+        output.to_csv(path, mode="a", header=not path.exists(), index=False)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Convert a crowsnest record file to topic-specific csv files"
+    )
+    parser.add_argument(
+        "--output-path",
+        type=Path,
+        default=Path.cwd(),
+        help="Path to the desired output directory",
+    )
+    args = parser.parse_args()
+    process(args.output_path)

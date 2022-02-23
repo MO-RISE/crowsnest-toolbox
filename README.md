@@ -14,6 +14,11 @@ A toolbox for handling of streaming data within a crowsnest setup.
   ...
   ```
 
+* Convert recorded data files to topic-specific csv format
+  ```
+  cat *.log | to_csv --output-path <OUTPUT DIRECTORY PATH>
+  ```
+
 * Replay recorded data (assuming the format specified above)
   ```
   TODO: Requires scripting
