@@ -61,7 +61,7 @@ The following are "recipes" for "run" commands that can be used with this image.
 
   On receiver side:
   ```
-  mosquitto_sub -t <TOPIC> -N | socat STDIN UDP4-DATAGRAM:<MULTICAST_GROUP_IP>:<MULTICAST_PORT>
+  mosquitto_sub -t <TOPIC> -N | socat STDIN UDP4-DATAGRAM:<MULTICAST_GROUP_IP>:<MULTICAST_PORT>,ip-multicast-if=<INTERFACE_IP_OR_NAME>
   ```
 
 * Chunkify and base64 encode binary data stream to enable bridging over MQTT
