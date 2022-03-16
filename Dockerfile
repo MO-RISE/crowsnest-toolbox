@@ -3,6 +3,7 @@ FROM python:3.9-slim
 RUN mkdir recordings
 
 RUN apt-get update && apt-get install -y \
+    netcat-openbsd \
     socat \
     mosquitto-clients \
     && rm -rf /var/lib/apt/lists/*
