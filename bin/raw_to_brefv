@@ -4,6 +4,8 @@
 # input stream is put in a separate brefv envelope (compact JSON output) with
 # the current timestamp in iso 8601 format.
 
+set -euo pipefail
+
 while read -r payload
 do
     jq -c --null-input \

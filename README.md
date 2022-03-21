@@ -13,10 +13,10 @@ Using docker-compose it would look like this (example: recording from a MQTT bro
 version: '3'
 services:
     recorder:
-        image: ghcr.io/mo-rise/crowsnest-toolbox
-        restart: on-failure
+        image: ghcr.io/mo-rise/crowsnest-toolbox:v0.3.0
+        restart: always
         network_mode: "host"
-        command: "mosquitto_sub -t <topic_1> -t <topic_2> -F "%U %t %v" >> crowsnest.log"
+        command: ["mosquitto_sub -t <topic_1> -t <topic_2> -F "%U %t %v" >> crowsnest.log"]
         volumes:
         - $HOME/recordings:/recordings
         working_dir: /recordings
@@ -26,9 +26,16 @@ services:
 
 The following are "recipes" for "run" commands that can be used with this image.
 
-* Recording data
+* Injecting data from "any" source into a mqtt broker using the standard brefv format (examplified by a multicast stream). Every UDP packet gets base64-encoded and packaged into a brefv envelope and then published to the broker:
   ```
-  mosquitto_sub -t <topic_1> -t <topic_2> -F "%U %t %v" >> crowsnest.log
+  socat -u UDP4-RECVFROM:60002,reuseaddr,ip-add-membership=239.192.0.2:enp2s0,fork SYSTEM:'base64' \
+  | raw_to_brefv \
+  | mosquitto_pub -l -t '<topic>'
+  ```
+
+* Recording brefv data from a mqtt broker
+  ```
+  mosquitto_sub -t <topic_1> -t <topic_2> -F "%U %t %p" >> crowsnest.log
   ```
   Produces output as:
   ```
@@ -52,20 +59,18 @@ The following are "recipes" for "run" commands that can be used with this image.
   cat first.log second.log third.log | sort -k 1 | (replay?)
   ```
 
-* Bridge (one-way) textual (newline separated) multicast traffic via a MQTT broker
-  
-  On sender side:
-  ```
-  socat UDP4-RECV:<MULTICAST_PORT>,reuseaddr,ip-add-membership=<MULTICAST_GROUP_IP>:<INTERFACE_IP_OR_NAME> STDOUT | mosquitto_pub -l -t <TOPIC>
-  ```
+### socat-specific magic
 
-  On receiver side:
-  ```
-  mosquitto_sub -t <TOPIC> -N | socat STDIN UDP4-DATAGRAM:<MULTICAST_GROUP_IP>:<MULTICAST_PORT>,ip-multicast-if=<INTERFACE_IP_OR_NAME>
-  ```
+In general, this one is good: https://gist.github.com/jdimpson/6ae2f91ec133da8453b0198f9be05bd5
 
-* Chunkify and base64 encode binary data stream to enable bridging over MQTT
-  ```
-  TODO: Requires scripting
-  ```
-  
+More specifically for multicast:
+```
+socat UDP4-RECV:<MULTICAST_PORT>,reuseaddr,ip-add-membership=<MULTICAST_GROUP_IP>:<INTERFACE_IP_OR_NAME> STDOUT
+```
+```
+socat UDP4-RECVFROM:<MULTICAST_PORT>,fork,reuseaddr,ip-add-membership=<MULTICAST_GROUP_IP>:<INTERFACE_IP_OR_NAME> STDOUT
+```
+```
+socat STDIN UDP4-DATAGRAM:<MULTICAST_GROUP_IP>:<MULTICAST_PORT>,ip-multicast-if=<INTERFACE_IP_OR_NAME>
+```
+
