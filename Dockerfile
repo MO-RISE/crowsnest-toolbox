@@ -15,7 +15,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY ./bin/to_csv /usr/local/bin/to_csv
 RUN chmod a+x /usr/local/bin/to_csv
 
-COPY ./bin/raw_to_brefv.sh /usr/local/bin/raw_to_brefv
+COPY ./bin/raw_to_brefv /usr/local/bin/raw_to_brefv
 RUN chmod a+x /usr/local/bin/raw_to_brefv
 
 ENTRYPOINT ["/bin/bash", "-l", "-c"]
