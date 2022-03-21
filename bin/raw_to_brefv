@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Command line utility tool for processing input from stdin. Each line on the
+# input stream is put in a separate brefv envelope (compact JSON output) with
+# the current timestamp in iso 8601 format.
+
+while read -r payload
+do
+    jq -c --null-input \
+  --arg sent_at "$(date -u --iso-8601=ns)" \
+  --arg message "$payload" \
+  '{
+      "sent_at": $sent_at,
+      "message": $message
+    }'
+done
