@@ -1,8 +1,0 @@
-#!/bin/bash
-
-# Command line utility tool for logging data from a mqtt broker using the
-# defined crowsnest logging format.
-
-set -euo pipefail
-
-mosquitto_sub -v "$@" | prepend_iso_time

@@ -24,7 +24,4 @@ RUN chmod a+x /usr/local/bin/b64_encode
 COPY ./bin/prepend_iso_time /usr/local/bin/prepend_iso_time
 RUN chmod a+x /usr/local/bin/prepend_iso_time
 
-COPY ./bin/crowsnest_log /usr/local/bin/crowsnest_log
-RUN chmod a+x /usr/local/bin/crowsnest_log
-
 ENTRYPOINT ["/bin/bash", "-l", "-c"]
