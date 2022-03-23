@@ -21,6 +21,18 @@ services:
         - $HOME/recordings:/recordings
         working_dir: /recordings
 ```
+## Binaries
+
+The following "special" binaries are included in the toolbox:
+* **b64_encode**
+  Processes each line of stdin and base64 encodes it
+* **raw_to_brefv**
+  Processes each line of stdin and puts it into a timestamped brefv envelope
+* **prepend_iso_time**
+  Prepend a iso timestamp of nanosecond resolution to each line on stdin
+* **to_csv**
+  Processes a crowsnest log file into a set of "topic-specific" csv files
+
 
 ## Recipes
 
@@ -28,7 +40,8 @@ The following are "recipes" for "run" commands that can be used with this image.
 
 * Injecting data from "any" source into a mqtt broker using the standard brefv format (examplified by a multicast stream). Every UDP packet gets base64-encoded and packaged into a brefv envelope and then published to the broker:
   ```
-  socat -u UDP4-RECVFROM:60002,reuseaddr,ip-add-membership=239.192.0.2:enp2s0,fork SYSTEM:'base64' \
+  socat -u UDP4-RECV:60002,reuseaddr,ip-add-membership=239.192.0.2:enp2s0 - \
+  | b64_encode \
   | raw_to_brefv \
   | mosquitto_pub -l -t '<topic>'
   ```

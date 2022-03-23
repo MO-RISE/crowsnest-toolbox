@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Command line utility tool for processing input from stdin. Each line on the
+# input stream base64 encoded with no wrapping and ended with a newline.
+
+set -euo pipefail
+
+while read -r line
+do
+  echo "$line" | base64 --wrap=0; echo
+done

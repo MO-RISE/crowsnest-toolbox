@@ -18,4 +18,10 @@ RUN chmod a+x /usr/local/bin/to_csv
 COPY ./bin/raw_to_brefv /usr/local/bin/raw_to_brefv
 RUN chmod a+x /usr/local/bin/raw_to_brefv
 
+COPY ./bin/b64_encode /usr/local/bin/b64_encode
+RUN chmod a+x /usr/local/bin/b64_encode
+
+COPY ./bin/prepend_iso_time /usr/local/bin/prepend_iso_time
+RUN chmod a+x /usr/local/bin/prepend_iso_time
+
 ENTRYPOINT ["/bin/bash", "-l", "-c"]
