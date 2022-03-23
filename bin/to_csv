@@ -22,11 +22,12 @@ import json
 from pathlib import Path
 import argparse
 from collections import defaultdict
+from base64 import b64decode
 
 import pandas as pd
 
 
-def process(directory_path: Path):
+def process(directory_path: Path, decode: bool = False):
     """Process stdin and output csv files
 
     Args:
@@ -37,15 +38,18 @@ def process(directory_path: Path):
     _payload_store = defaultdict(list)
 
     for line in sys.stdin.readlines():
-        unix_timestamp, topic, *payload = line.split(" ")
+        logged_at, topic, *payload = line.split(" ")
         payload = " ".join(payload)
-        _timestamp_store[topic].append(float(unix_timestamp))
+        _timestamp_store[topic].append(logged_at)
         _payload_store[topic].append(json.loads(payload))
 
     for topic, payloads in _payload_store.items():
-        unix_timestamps = _timestamp_store[topic]
+        logged_at = _timestamp_store[topic]
         output: pd.DataFrame = pd.json_normalize(payloads)
-        output.insert(0, "received_at", unix_timestamps)
+        output.insert(0, "logged_at", logged_at)
+
+        if decode:
+            output["message"] = list(map(b64decode, output["message"]))
 
         path = directory_path / Path(f"{topic.replace('/', '__')}.csv")
         output.to_csv(path, mode="a", header=not path.exists(), index=False)
@@ -61,5 +65,11 @@ if __name__ == "__main__":
         default=Path.cwd(),
         help="Path to the desired output directory",
     )
+    parser.add_argument(
+        "--decode",
+        action="store_true",
+        default=False,
+        help="base64 decode the message content",
+    )
     args = parser.parse_args()
-    process(args.output_path)
+    process(args.output_path, decode=args.decode)

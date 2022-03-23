@@ -32,6 +32,8 @@ The following "special" binaries are included in the toolbox:
   Prepend a iso timestamp of nanosecond resolution to each line on stdin
 * **to_csv**
   Processes a crowsnest log file into a set of "topic-specific" csv files
+* **crowsnest_log**
+  Logs messages from a mqtt broker to stdout in the defined crowsnest log format. All arguments passed to this script is forwarded unchanged to `mosquitto_sub`.
 
 
 ## Recipes
