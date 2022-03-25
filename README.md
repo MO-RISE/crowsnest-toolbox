@@ -15,11 +15,7 @@ services:
     recorder:
         image: ghcr.io/mo-rise/crowsnest-toolbox:v0.3.0
         restart: always
-        network_mode: "host"
-        command: ["mosquitto_sub -t <topic_1> -t <topic_2> -F "%U %t %v" >> crowsnest.log"]
-        volumes:
-        - $HOME/recordings:/recordings
-        working_dir: /recordings
+        command: ["<command>"]
 ```
 ## Binaries
 
@@ -32,8 +28,6 @@ The following "special" binaries are included in the toolbox:
   Prepend a iso timestamp of nanosecond resolution to each line on stdin
 * **to_csv**
   Processes a crowsnest log file into a set of "topic-specific" csv files
-* **crowsnest_log**
-  Logs messages from a mqtt broker to stdout in the defined crowsnest log format. All arguments passed to this script is forwarded unchanged to `mosquitto_sub`.
 
 
 ## Recipes
@@ -42,20 +36,19 @@ The following are "recipes" for "run" commands that can be used with this image.
 
 * Injecting data from "any" source into a mqtt broker using the standard brefv format (examplified by a multicast stream). Every UDP packet gets base64-encoded and packaged into a brefv envelope and then published to the broker:
   ```
-  socat -u UDP4-RECV:60002,reuseaddr,ip-add-membership=239.192.0.2:enp2s0 - \
-  | b64_encode \
+  socat -u UDP4-RECVFROM:60002,reuseaddr,ip-add-membership=239.192.0.2:enp2s0,fork SYSTEM:'base64 --wrap=0' \
   | raw_to_brefv \
   | mosquitto_pub -l -t '<topic>'
   ```
 
 * Recording brefv data from a mqtt broker
   ```
-  mosquitto_sub -t <topic_1> -t <topic_2> -F "%U %t %p" >> crowsnest.log
+  mosquitto_sub -v -t <topic_1> -t <topic_2> | prepend_iso_time >> crowsnest.log
   ```
   Produces output as:
   ```
-  <Unix timestamp> <Receive topic> <Message payload>
-  <Unix timestamp> <Receive topic> <Message payload>
+  <ISO8601 timestamp> <Receive topic> <Message payload>
+  <ISO8601 timestamp> <Receive topic> <Message payload>
   ...
   ```
 
