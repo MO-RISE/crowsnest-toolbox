@@ -52,6 +52,11 @@ The following are "recipes" for "run" commands that can be used with this image.
   ...
   ```
 
+* Subscribe to a topic and extract the message payload in realtime
+  ```
+  mosquitto_sub -t <topic_1> | jq -r --unbuffered .message
+  ```
+
 * Convert recorded data files to topic-specific csv format
   ```
   cat *.log | to_csv --output-path <OUTPUT DIRECTORY PATH>
