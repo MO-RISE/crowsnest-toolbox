@@ -2,11 +2,11 @@
 
 # Command line utility tool for processing input from stdin. Each line on the
 # input stream is put in a separate brefv envelope (compact JSON output) with
-# the current timestamp in iso 8601 format.
+# the current timestamp in iso 8601 format according to the RFC3339 subset.
 
 set -euo pipefail
 
 while read -r payload
 do
-    jo sent_at="$(date --iso-8601=ns)" message="$payload" 
+    jo sent_at="$(date --rfc-3339=ns)" message="$payload" 
 done

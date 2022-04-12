@@ -24,8 +24,8 @@ The following "special" binaries are included in the toolbox:
   Processes each line of stdin and base64 encodes it
 * **raw_to_brefv**
   Processes each line of stdin and puts it into a timestamped brefv envelope
-* **prepend_iso_time**
-  Prepend a iso timestamp of nanosecond resolution to each line on stdin
+* **prepend_timestamp**
+  Prepend a RFC3339 timestamp of nanosecond resolution to each line on stdin
 * **to_csv**
   Processes a crowsnest log file into a set of "topic-specific" csv files
 
@@ -43,12 +43,12 @@ The following are "recipes" for "run" commands that can be used with this image.
 
 * Recording brefv data from a mqtt broker
   ```
-  mosquitto_sub -v -t <topic_1> -t <topic_2> | prepend_iso_time >> crowsnest.log
+  mosquitto_sub -v -t <topic_1> -t <topic_2> | prepend_timestamp >> crowsnest.log
   ```
   Produces output as:
   ```
-  <ISO8601 timestamp> <Receive topic> <Message payload>
-  <ISO8601 timestamp> <Receive topic> <Message payload>
+  <RFC3339 timestamp> <Receive topic> <Message payload>
+  <RFC3339 timestamp> <Receive topic> <Message payload>
   ...
   ```
 
