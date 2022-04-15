@@ -1,12 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env python3.9
 
-# Command line utility tool for processing input from stdin. Each line on the
-# input stream is prepended with the current timestamp in iso 8601 format according
-# to the RFC3339 subset.
+"""
+Command line utility tool for processing input from stdin. Each line on the
+input stream is prepended with the current timestamp in iso 8601 format according
+to the RFC3339 subset.
+"""
 
-set -euo pipefail
+import sys
+from datetime import datetime, timezone
 
-while read -r line
-do
-  echo "$(date -u --rfc-3339=ns) $line"
-done
+for line in sys.stdin:
+    sys.stdout.write(f"{datetime.now(timezone.utc).isoformat()} {line}")
+    sys.stdout.flush()

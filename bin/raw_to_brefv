@@ -1,12 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env python3.9
 
-# Command line utility tool for processing input from stdin. Each line on the
-# input stream is put in a separate brefv envelope (compact JSON output) with
-# the current timestamp in iso 8601 format according to the RFC3339 subset.
+"""
+Command line utility tool for processing input from stdin. Each line on the
+input stream is put in a separate brefv envelope (compact JSON output) with
+the current timestamp in iso 8601 format according to the RFC3339 subset.
+"""
 
-set -euo pipefail
+import sys
+import json
+from datetime import datetime, timezone
 
-while read -r payload
-do
-    jo sent_at="$(date --rfc-3339=ns)" message="$payload" 
-done
+for line in sys.stdin:
+    output = json.dumps(
+        {"sent_at": datetime.now(timezone.utc).isoformat(), "message": line.strip()}
+    )
+    sys.stdout.write(output + "\n")
+    sys.stdout.flush()

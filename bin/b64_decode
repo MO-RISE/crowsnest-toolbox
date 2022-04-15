@@ -1,11 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env python3.9
 
-# Command line utility tool for processing input from stdin. Each line on the
-# input stream is base64 decoded.
+"""
+Command line utility tool for processing input from stdin. Each line on the
+input stream is base64 decoded.
+"""
 
-set -euo pipefail
+import sys
+from base64 import b64decode
 
-while read -r line
-do
-  echo "$line" | base64 --decode
-done
+for line in sys.stdin:
+    sys.stdout.write(b64decode(line.encode()).decode())
+    sys.stdout.flush()

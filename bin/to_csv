@@ -37,7 +37,7 @@ def process(directory_path: Path, decode: bool = False):
     _timestamp_store = defaultdict(list)
     _payload_store = defaultdict(list)
 
-    for line in sys.stdin.readlines():
+    for line in sys.stdin:
         logged_at, topic, *payload = line.split(" ")
         payload = " ".join(payload)
         _timestamp_store[topic].append(logged_at)

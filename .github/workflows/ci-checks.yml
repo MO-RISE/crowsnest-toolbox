@@ -33,7 +33,15 @@ jobs:
         pip install -r requirements.txt -r requirements_dev.txt
     - name: Run black
       run: |
+        black --check bin/b64_decode
+        black --check bin/b64_encode
+        black --check bin/prepend_timestamp
+        black --check bin/raw_to_brefv
         black --check bin/to_csv
     - name: Run pylint
       run: |
+        pylint bin/b64_decode
+        pylint bin/b64_encode
+        pylint bin/prepend_timestamp
+        pylint bin/raw_to_brefv
         pylint bin/to_csv
