@@ -20,12 +20,14 @@ services:
 ## Binaries
 
 The following "special" binaries are included in the toolbox:
+* **b64_decode**
+  Processes each line of stdin and base64 decodes it
 * **b64_encode**
   Processes each line of stdin and base64 encodes it
 * **raw_to_brefv**
   Processes each line of stdin and puts it into a timestamped brefv envelope
 * **prepend_timestamp**
-  Prepend a RFC3339 timestamp of nanosecond resolution to each line on stdin
+  Prepend a RFC3339 timestamp of microsecond resolution to each line on stdin
 * **to_csv**
   Processes a crowsnest log file into a set of "topic-specific" csv files
 * **udp_listen**
