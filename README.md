@@ -28,6 +28,8 @@ The following "special" binaries are included in the toolbox:
   Prepend a RFC3339 timestamp of nanosecond resolution to each line on stdin
 * **to_csv**
   Processes a crowsnest log file into a set of "topic-specific" csv files
+* **udp_listen**
+  Eavesdrop onto UDP traffic and output to stdout, currently only supports multicast.
 
 
 ## Recipes
@@ -36,7 +38,7 @@ The following are "recipes" for "run" commands that can be used with this image.
 
 * Injecting data from "any" source into a mqtt broker using the standard brefv format (examplified by a multicast stream). Every UDP packet gets base64-encoded and packaged into a brefv envelope and then published to the broker:
   ```
-  socat -u UDP4-RECVFROM:60002,reuseaddr,ip-add-membership=239.192.0.2:enp2s0,fork SYSTEM:echo $$(base64 --wrap=0) \
+  udp_listen --encode multicast 239.192.0.2 60002 --interface=172.16.6.1 \
   | raw_to_brefv \
   | mosquitto_pub -l -t '<topic>'
   ```
