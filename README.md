@@ -8,7 +8,7 @@ The image expects a "run" command inputted on startup. Using docker run, this wo
 docker run crowsnest-toolbox "<command>"
 ```
 
-Using docker-compose it would look like this (example: recording from a MQTT broker):
+Using docker-compose it would look like this:
 ```
 version: '3'
 services:
